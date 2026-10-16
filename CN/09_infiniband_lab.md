@@ -96,6 +96,24 @@ sudo apt-get install doca-ofed -y
 sudo apt-get install rlwrap -y
 ```
 
+
+
+>  Ubuntu 24.04 内核版本6.8.0-147-generic开始，STATIC_IANA_VXLAN = BIT(2)，会出现安装错误。
+
+[修复脚本](../conf/ofed-maysleep-fix.sh)
+
+```bash
+#安装时报错
+mlx5/core/en_main.c:6347:32: error: 'UDP_TUNNEL_NIC_INFO_MAY_SLEEP' undeclared
+make[2]: *** [Makefile:1946: .../build] Error 2
+
+#检查内核
+ grep -c UDP_TUNNEL_NIC_INFO_MAY_SLEEP /usr/src/linux-headers-$(uname -r)/include/net/udp_tunnel.h
+# 输出 1 = 有该 flag（旧内核，OFED 24.10 原样可编）；输出 0 = 已删除（需要打补丁或换 DOCA 3.x）
+
+#运行脚本可以修复
+```
+
 安装完成后以下命令均可用：
 
 | 命令                                            | 来源包           |
